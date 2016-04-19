@@ -1,0 +1,47 @@
+#!/bin/bash
+
+#  TODO:
+#   - Check that we are at the tip of a branch with only one parent and no
+#     mergepoints since the branch-off.
+#   - Check that ${1} is a branch
+#   - Try to find the branch we branched off of automatically (so that ${1}
+#     isn't needed)
+
+function _get-merge-point {
+    CURR_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+    MERGE_BASE="$(git merge-base "${1}" "${CURR_BRANCH}")"
+    echo "${MERGE_BASE}"
+}
+
+function autosquash {
+    if [ -z "${1}" ]; then
+        echo "Usage: git wip autostash [<flags>] <branch>"
+        exit 2
+    fi
+
+    EDITOR=true git rebase -i --autosquash "$(_get-merge-point "${@}")"
+}
+
+function rework {
+    if [ -z "${1}" ]; then
+        echo "Usage: git wip rework [<flags>] <branch>"
+        exit 2
+    fi
+
+    git rebase -i "$(_get-merge-point "${1}")"
+}
+
+case "${1}" in
+    autosquash)
+        shift
+        autosquash "${@}"
+        ;;
+    rework)
+        shift
+        rework "${@}"
+        ;;
+    *)
+        echo "Usage: git wip [command] <flags>"
+        exit 2
+        ;;
+esac
