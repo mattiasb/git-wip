@@ -7,10 +7,9 @@
 #   - Try to find the branch we branched off of automatically (so that ${1}
 #     isn't needed)
 
-function _get-merge-point {
+function branch-off-point {
     CURR_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-    MERGE_BASE="$(git merge-base "${1}" "${CURR_BRANCH}")"
-    echo "${MERGE_BASE}"
+    echo "$(git merge-base "${1}" "${CURR_BRANCH}")"
 }
 
 function autosquash {
@@ -19,7 +18,7 @@ function autosquash {
         exit 2
     fi
 
-    EDITOR=true git rebase -i --autosquash "$(_get-merge-point "${@}")"
+    EDITOR=true git rebase -i --autosquash "$(branch-off-point "${@}")"
 }
 
 function rework {
@@ -28,10 +27,14 @@ function rework {
         exit 2
     fi
 
-    git rebase -i "$(_get-merge-point "${1}")"
+    git rebase -i "$(branch-off-point "${1}")"
 }
 
 case "${1}" in
+    branch-off-point)
+        shift
+        branch-off-point "${@}"
+        ;;
     autosquash)
         shift
         autosquash "${@}"
