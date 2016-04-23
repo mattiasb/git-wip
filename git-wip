@@ -7,12 +7,6 @@
 #   - Try to find the branch we branched off of automatically (so that ${1}
 #     isn't needed)
 
-# Get back the commit id of the point right before the first commit of
-# this branch.
-function branch-off-point {
-    git merge-base "${1}" "$(git rev-parse --abbrev-ref HEAD)"
-}
-
 function autosquash {
     if [ -z "${1}" ]; then
         echo "Usage: git wip autostash [<flags>] <branch>"
@@ -20,6 +14,12 @@ function autosquash {
     fi
 
     EDITOR=true git rebase -i --autosquash "$(branch-off-point "${@}")"
+}
+
+# Get back the commit id of the point right before the first commit of
+# this branch.
+function branch-off-point {
+    git merge-base "${1}" "$(git rev-parse --abbrev-ref HEAD)"
 }
 
 function rework {
