@@ -47,12 +47,18 @@ function log {
 }
 
 function rework {
+    local flags branch
+
     if [ -z "${1}" ]; then
         echo "Usage: git wip rework [<flags>] <branch>"
         exit 2
     fi
 
-    git rebase -i "$(branch-off-point "${1}")"
+    flags=${*:1:$#-1}
+    branch=${*: -1}
+
+    git rebase -i "${flags[@]}" \
+        "$(branch-off-point "${branch[@]}")"
 }
 
 arg="${1}"
