@@ -8,12 +8,18 @@
 #     isn't needed)
 
 function autosquash {
+    local flags branch
+
     if [ -z "${1}" ]; then
         echo "Usage: git wip autostash [<flags>] <branch>"
         exit 2
     fi
 
-    EDITOR=true git rebase -i --autosquash "$(branch-off-point "${@}")"
+    flags=${*:1:$#-1}
+    branch=${*: -1}
+
+    EDITOR=true git rebase -i --autosquash "${flags[@]}" \
+          "$(branch-off-point "${branch[@]}")"
 }
 
 # Get back the commit id of the point right before the first commit of
