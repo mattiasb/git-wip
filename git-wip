@@ -28,6 +28,14 @@ function branch-off-point {
     git merge-base "${1}" "$(git rev-parse --abbrev-ref HEAD)"
 }
 
+function log {
+    local flags branch
+
+    flags=( ${@:1:$#-1} )
+    branch=( ${@: -1} )
+    git log "${flags[@]}" "$(branch-off-point "${branch[@]}")"..
+}
+
 function rework {
     if [ -z "${1}" ]; then
         echo "Usage: git wip rework [<flags>] <branch>"
@@ -45,6 +53,9 @@ case "${arg}" in
         ;;
     branch-off-point)
         branch-off-point "${@}"
+        ;;
+    log)
+        log "${@}"
         ;;
     rework)
         rework "${@}"
