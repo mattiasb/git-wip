@@ -34,11 +34,11 @@ function rework {
 arg="${1}"
 shift
 case "${arg}" in
-    branch-off-point)
-        branch-off-point "${@}"
-        ;;
     autosquash)
         autosquash "${@}"
+        ;;
+    branch-off-point)
+        branch-off-point "${@}"
         ;;
     rework)
         rework "${@}"
