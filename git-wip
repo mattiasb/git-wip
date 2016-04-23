@@ -54,8 +54,8 @@ function rework {
         exit 2
     fi
 
-    flags=${*:1:$#-1}
-    branch=${*: -1}
+    flags=( ${*:1:$#-1} )
+    branch=( ${*: -1} )
 
     git rebase -i "${flags[@]}" \
         "$(branch-off-point "${branch[@]}")"
