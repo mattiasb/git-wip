@@ -25,11 +25,21 @@ function autosquash {
 # Get back the commit id of the point right before the first commit of
 # this branch.
 function branch-off-point {
+    if [ -z "${1}" ]; then
+        echo "Usage: git wip branch-off-point <branch>"
+        exit 2
+    fi
+
     git merge-base "${1}" "$(git rev-parse --abbrev-ref HEAD)"
 }
 
 function log {
     local flags branch
+
+    if [ -z "${1}" ]; then
+        echo "Usage: git wip log [<flags>] <branch>"
+        exit 2
+    fi
 
     flags=( ${@:1:$#-1} )
     branch=( ${@: -1} )
