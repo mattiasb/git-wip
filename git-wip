@@ -19,25 +19,41 @@
 
 # git-wip makes it easier to work with wip-branches
 
-function auto-squash {
-    local flags
-    flags=${*:1:$#-1}
-
-    EDITOR=true git rebase -i --autosquash "${flags[@]}" "$(rebase-point)"
+function _help-flag {
+    [[ " ${@} " == *" --help "* ]] || [[ " ${@} " == *" -h "* ]]
 }
 
-function edit-history {
-    local flags
-    flags=( ${*:1:$#-1} )
+function auto-squash {
+    if _help-flag "${@}"; then
+        echo "Usage: git wip auto-squash [rebase-flags]"
+        echo
+        echo "Short-hand for:"
+        echo "  EDITOR=true git rebase -i --autosquash [rebase-flags] <rebase-point>"
+    else
+        EDITOR=true git rebase -i --autosquash "${@}" "$(rebase-point)"
+    fi
+}
 
-    git rebase -i "${flags[@]}" "$(rebase-point)"
+function reapply {
+    if _help-flag "${@}"; then
+        echo "Usage: git wip reapply [rebase-flags]"
+        echo
+        echo "Short-hand for:"
+        echo "  git rebase -i [rebase-flags] <rebase-point>"
+    else
+        git rebase -i "${@}" "$(rebase-point)"
+    fi
 }
 
 function log {
-    local flags
-
-    flags=( ${@:1:$#-1} )
-    git log "${flags[@]}" "$(rebase-point)"..
+    if _help-flag "${@}"; then
+        echo "Usage: git wip reapply [rebase-flags]"
+        echo
+        echo "Short-hand for:"
+        echo "  git log [rebase-flags] <rebase-point>.."
+    else
+        git log "${@}" "$(rebase-point)"..
+    fi
 }
 
 function rebase-point {
@@ -55,8 +71,8 @@ case "${arg}" in
     auto-squash)
         auto-squash "${@}"
         ;;
-    edit-history)
-        edit-history "${@}"
+    reapply)
+        reapply "${@}"
         ;;
     log)
         log "${@}"
@@ -72,9 +88,9 @@ case "${arg}" in
         echo
         echo "Commands:"
         echo "  auto-squash         Automatically squash all squash! and fixup! commits"
-        echo "  edit-history        Run an interactive rebase"
+        echo "  reapply             Reapply all commits using an interactive rebase"
         echo "  log                 Show commit logs"
-        echo "  rebase-point        Get the latest branch-off-point"
+        echo "  rebase-point        Get the parent of the first commit unique for this branch"
         exit 2
         ;;
 esac
