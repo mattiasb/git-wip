@@ -1,83 +1,80 @@
 #!/bin/bash
 
-#  TODO:
-#   - Check that we are at the tip of a branch with only one parent and no
-#     mergepoints since the branch-off.
-#   - Check that ${1} is a branch
-#   - Try to find the branch we branched off of automatically (so that ${1}
-#     isn't needed)
+# Copyright ⓒ 2016 Mattias Bengtsson
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with This program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
 
-function autosquash {
-    local flags branch
+# git-wip makes it easier to work with wip-branches
 
-    if [ -z "${1}" ]; then
-        echo "Usage: git wip autostash [<flags>] <branch>"
-        exit 2
-    fi
-
+function auto-squash {
+    local flags
     flags=${*:1:$#-1}
-    branch=${*: -1}
 
-    EDITOR=true git rebase -i --autosquash "${flags[@]}" \
-          "$(branch-off-point "${branch[@]}")"
+    EDITOR=true git rebase -i --autosquash "${flags[@]}" "$(rebase-point)"
 }
 
-# Get back the commit id of the point right before the first commit of
-# this branch.
-function branch-off-point {
-    if [ -z "${1}" ]; then
-        echo "Usage: git wip branch-off-point <branch>"
-        exit 2
-    fi
+function edit-history {
+    local flags
+    flags=( ${*:1:$#-1} )
 
-    git merge-base "${1}" "$(git rev-parse --abbrev-ref HEAD)"
+    git rebase -i "${flags[@]}" "$(rebase-point)"
 }
 
 function log {
-    local flags branch
-
-    if [ -z "${1}" ]; then
-        echo "Usage: git wip log [<flags>] <branch>"
-        exit 2
-    fi
+    local flags
 
     flags=( ${@:1:$#-1} )
-    branch=( ${@: -1} )
-    git log "${flags[@]}" "$(branch-off-point "${branch[@]}")"..
+    git log "${flags[@]}" "$(rebase-point)"..
 }
 
-function rework {
-    local flags branch
-
-    if [ -z "${1}" ]; then
-        echo "Usage: git wip rework [<flags>] <branch>"
-        exit 2
-    fi
-
-    flags=( ${*:1:$#-1} )
-    branch=( ${*: -1} )
-
-    git rebase -i "${flags[@]}" \
-        "$(branch-off-point "${branch[@]}")"
+function rebase-point {
+    for ref in $(git rev-list --parents "HEAD"); do
+        if [ "$(git branch --contains "${ref}" | wc -l)" -gt 1 ]; then
+            echo "${ref}"
+            return
+        fi
+    done
 }
 
 arg="${1}"
 shift
 case "${arg}" in
-    autosquash)
-        autosquash "${@}"
+    auto-squash)
+        auto-squash "${@}"
         ;;
-    branch-off-point)
-        branch-off-point "${@}"
+    edit-history)
+        edit-history "${@}"
         ;;
     log)
         log "${@}"
         ;;
-    rework)
-        rework "${@}"
+    rebase-point)
+        rebase-point "${@}"
         ;;
     *)
-        echo "Usage: git wip [command] <flags>"
+        echo "Usage: git wip [command] [<option>]"
+        echo
+        echo "  git wip helps you modify commits since the latest branch-point"
+        echo "  All commands work only on the commits unique to this branch"
+        echo
+        echo "Commands:"
+        echo "  auto-squash         Automatically squash all squash! and fixup! commits"
+        echo "  edit-history        Run an interactive rebase"
+        echo "  log                 Show commit logs"
+        echo "  rebase-point        Get the latest branch-off-point"
         exit 2
         ;;
 esac
