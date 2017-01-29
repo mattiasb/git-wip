@@ -17,16 +17,16 @@ View the log of this wip branch:
 $ git wip log
 ```
 
-Add some fixup commits and autosquash them:
+Add some fixup- and squash commits:
 
 ```shell
 $ echo "Cool changes!" >> README.md
-$ git commit -a --fixup {ref-to-my-readme-commit}
+$ git wip fixup -a
 $ echo "Dependency: zlib=1.2.0" >> deps.json
-$ git commit -a --fixup {ref-to-my-zlib-commit}
+$ git wip squash -a
 ```
 
-And to squash them:
+And to perform the actual fixup/squash:
 
 ```shell
 $ git wip autosquash
