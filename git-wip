@@ -36,10 +36,10 @@ function auto-squash {
 
 function log {
     if _help-flag "${@}"; then
-        echo "Usage: git wip reapply [rebase-flags]"
+        echo "Usage: git wip log [log-flags]"
         echo
         echo "Short-hand for:"
-        echo "  git log [rebase-flags] <rebase-point>.."
+        echo "  git log [log-flags] \"$(git wip rebase-point)\".."
     else
         git log "${@}" "$(rebase-point)"..
     fi
@@ -59,7 +59,7 @@ function reapply {
         echo "Usage: git wip reapply [rebase-flags]"
         echo
         echo "Short-hand for:"
-        echo "  git rebase -i [rebase-flags] <rebase-point>"
+        echo "  git rebase -i [rebase-flags] \"$(git wip rebase-point)\""
     else
         git rebase -i "${@}" "$(rebase-point)"
     fi
