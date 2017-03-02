@@ -50,7 +50,7 @@ function fixup {
     else
         local commit
         commit="$(_select-commit "$(rebase-point)")"
-        git commit "${@}" --fixup=${commit}
+        git commit "${@}" --fixup="${commit}"
     fi
 }
 
@@ -93,7 +93,7 @@ function squash {
     else
         local commit
         commit="$(_select-commit "$(rebase-point)")"
-        git commit "${@}" --squash=${commit}
+        git commit "${@}" --squash="${commit}"
     fi
 }
 
