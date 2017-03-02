@@ -42,17 +42,6 @@ function autosquash {
     fi
 }
 
-function log {
-    if _help-flag "${@}"; then
-        echo "Usage: git wip log [log-flags]"
-        echo
-        echo "Short-hand for:"
-        echo "  git log [log-flags] \"$(git wip rebase-point)\".."
-    else
-        git log "${@}" "$(rebase-point)"..
-    fi
-}
-
 function fixup {
     if _help-flag "${@}"; then
         echo "Usage: git wip fixup [commit-flags]"
@@ -65,13 +54,15 @@ function fixup {
     fi
 }
 
-function rebase-point {
-    for ref in $(git rev-list --parents "HEAD"); do
-        if [ "$(git branch --contains "${ref}" | wc -l)" -gt 1 ]; then
-            echo "${ref}"
-            return
-        fi
-    done
+function log {
+    if _help-flag "${@}"; then
+        echo "Usage: git wip log [log-flags]"
+        echo
+        echo "Short-hand for:"
+        echo "  git log [log-flags] \"$(git wip rebase-point)\".."
+    else
+        git log "${@}" "$(rebase-point)"..
+    fi
 }
 
 function reapply {
@@ -83,6 +74,15 @@ function reapply {
     else
         git rebase -i "${@}" "$(rebase-point)"
     fi
+}
+
+function rebase-point {
+    for ref in $(git rev-list --parents "HEAD"); do
+        if [ "$(git branch --contains "${ref}" | wc -l)" -gt 1 ]; then
+            echo "${ref}"
+            return
+        fi
+    done
 }
 
 function squash {
@@ -103,11 +103,11 @@ case "${arg}" in
     autosquash|autos-quash)
         autosquash "${@}"
         ;;
-    log)
-        log "${@}"
-        ;;
     fixup)
         fixup "${@}"
+        ;;
+    log)
+        log "${@}"
         ;;
     reapply)
         reapply "${@}"
