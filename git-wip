@@ -17,8 +17,6 @@
 #
 # Author: Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
 
-# git-wip makes it easier to work with wip-branches
-
 _subcommand=$(basename "${0}")
 _subcommand=${_subcommand/git-/}
 
