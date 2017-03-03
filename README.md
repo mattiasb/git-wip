@@ -26,10 +26,17 @@ $ echo "Dependency: zlib=1.2.0" >> deps.json
 $ git wip squash -a
 ```
 
-And to perform the actual fixup/squash:
+To perform the actual fixup/squash:
 
 ```shell
 $ git wip autosquash
+```
+
+And to test that everything went fine (and you didnät introduce any non-building
+commits):
+
+```shell
+$ git wip for-all "make clean; make"
 ```
 
 [git]: https://git-scm.com/
