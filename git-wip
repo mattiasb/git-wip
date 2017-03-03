@@ -38,7 +38,10 @@ function autosquash {
         echo "Short-hand for:"
         echo "  EDITOR=true git rebase -i --autosquash [rebase-flags] <rebase-point>"
     else
-        EDITOR=true git rebase -i --autosquash "${@}" "$(rebase-point)"
+        local _rp
+        if _rp="$(rebase-point)"; then
+            EDITOR=true git rebase -i --autosquash "${@}" "${_rp}"
+        fi
     fi
 }
 
@@ -48,9 +51,11 @@ function fixup {
         echo
         echo "Add a fixup commit to a previous commit."
     else
-        local commit
-        commit="$(_select-commit "$(rebase-point)")"
-        git commit "${@}" --fixup="${commit}"
+        local commit _rp
+        if _rp="$(rebase-point)"; then
+            commit="$(_select-commit "${_rp}")"
+            git commit "${@}" --fixup="${commit}"
+        fi
     fi
 }
 
@@ -61,7 +66,10 @@ function log {
         echo "Short-hand for:"
         echo "  git log [log-flags] \"$(git wip rebase-point)\".."
     else
-        git log "${@}" "$(rebase-point)"..
+        local _rp
+        if _rp="$(rebase-point)"; then
+            git log "${@}" "${_rp}"..
+        fi
     fi
 }
 
@@ -72,7 +80,10 @@ function reapply {
         echo "Short-hand for:"
         echo "  git rebase -i [rebase-flags] \"$(git wip rebase-point)\""
     else
-        git rebase -i "${@}" "$(rebase-point)"
+        local _rp
+        if _rp="$(rebase-point)"; then
+            git rebase -i "${@}" "${_rp}"
+        fi
     fi
 }
 
@@ -80,9 +91,12 @@ function rebase-point {
     for ref in $(git rev-list --parents "HEAD"); do
         if [ "$(git branch --contains "${ref}" | wc -l)" -gt 1 ]; then
             echo "${ref}"
-            return
+            exit 0
         fi
     done
+
+    echo "No suitable rebase-point found!" >> /dev/stderr
+    exit 1
 }
 
 function squash {
@@ -91,9 +105,11 @@ function squash {
         echo
         echo "Add a squash commit to a previous commit."
     else
-        local commit
-        commit="$(_select-commit "$(rebase-point)")"
-        git commit "${@}" --squash="${commit}"
+        local commit _rp
+        if _rp="$(rebase-point)"; then
+            commit="$(_select-commit "$(rebase-point)")"
+            git commit "${@}" --squash="${_rp}"
+        fi
     fi
 }
 
