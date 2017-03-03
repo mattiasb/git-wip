@@ -73,6 +73,20 @@ function fixup {
     fi
 }
 
+function for-all {
+    if _help-flag "${@}"; then
+        echo "Usage: git ${_subcommand} foreach <COMMAND>"
+        echo
+        echo "Run <COMMAND> over all commits, stopping in case of failure."
+        echo "git rebase -x <COMMAND> \"\$(git ${_subcommand} rebase-point)\""
+    else
+        local _rp
+        if _rp="$(rebase-point)"; then
+            git rebase -x "${@}" "${_rp}"
+        fi
+    fi
+}
+
 function log {
     if _help-flag "${@}"; then
         echo "Usage: git ${_subcommand} log [log-flags]"
@@ -139,6 +153,9 @@ case "${arg}" in
         ;;
     fixup)
         fixup "${@}"
+        ;;
+    for-all)
+        for-all "${@}"
         ;;
     log)
         log "${@}"
