@@ -182,6 +182,7 @@ case "${arg}" in
         echo
         echo "Commands:"
         echo "  autosquash          Automatically squash all squash! and fixup! commits"
+        echo "  for-all             Run a command over all commits, stopping in case of failure."
         echo "  fixup               Add a fixup commit to a previous commit."
         echo "  log                 Show commit logs"
         echo "  reapply             Reapply all commits using an interactive rebase"
