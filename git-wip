@@ -45,14 +45,6 @@ function _select-commit {
     done
 }
 
-function _upstream_branch {
-    git rev-parse --abbrev-ref --symbolic-full-name "@{u}"
-}
-
-function _current_branch {
-    git rev-parse --abbrev-ref HEAD
-}
-
 function autosquash {
     if _help-flag "${@}"; then
         echo "Usage: git ${_subcommand} autosquash [rebase-flags]"
@@ -118,7 +110,7 @@ function rebase-point {
             fi
         done
     elif _local; then
-        git merge-base "$(_upstream_branch)" "$(_current_branch)" && exit 0
+        git merge-base HEAD "@{upstream}" && exit 0
     fi
 
     echo "No suitable rebase-point found!" >> /dev/stderr
