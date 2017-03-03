@@ -34,7 +34,12 @@ function _help-flag {
 
 function _select-commit {
     local IFS=$'\n'
-    select commit in $(git --no-pager wip log --oneline); do
+    local _commits
+
+    _wip   && _commits=$(git --no-pager wip   log --oneline)
+    _local && _commits=$(git --no-pager local log --oneline)
+
+    select commit in ${_commits}; do
         echo "${commit}" | cut -f1 -d" "
         break
     done
@@ -50,10 +55,10 @@ function _current_branch {
 
 function autosquash {
     if _help-flag "${@}"; then
-        echo "Usage: git wip autosquash [rebase-flags]"
+        echo "Usage: git ${_subcommand} autosquash [rebase-flags]"
         echo
         echo "Short-hand for:"
-        echo "  EDITOR=true git rebase -i --autosquash [rebase-flags] <rebase-point>"
+        echo "  EDITOR=true git rebase -i --autosquash [rebase-flags] \"\$(git ${_subcommand} rebase-point)\""
     else
         local _rp
         if _rp="$(rebase-point)"; then
@@ -64,7 +69,7 @@ function autosquash {
 
 function fixup {
     if _help-flag "${@}"; then
-        echo "Usage: git wip fixup [commit-flags]"
+        echo "Usage: git ${_subcommand} fixup [commit-flags]"
         echo
         echo "Add a fixup commit to a previous commit."
     else
@@ -78,10 +83,10 @@ function fixup {
 
 function log {
     if _help-flag "${@}"; then
-        echo "Usage: git wip log [log-flags]"
+        echo "Usage: git ${_subcommand} log [log-flags]"
         echo
         echo "Short-hand for:"
-        echo "  git log [log-flags] \"$(git wip rebase-point)\".."
+        echo "  git log [log-flags] \"\$(git ${_subcommand} rebase-point)\".."
     else
         local _rp
         if _rp="$(rebase-point)"; then
@@ -92,10 +97,10 @@ function log {
 
 function reapply {
     if _help-flag "${@}"; then
-        echo "Usage: git wip reapply [rebase-flags]"
+        echo "Usage: git ${_subcommand} reapply [rebase-flags]"
         echo
         echo "Short-hand for:"
-        echo "  git rebase -i [rebase-flags] \"$(git wip rebase-point)\""
+        echo "  git rebase -i [rebase-flags] \"\$(git ${_subcommand} rebase-point)\""
     else
         local _rp
         if _rp="$(rebase-point)"; then
@@ -122,7 +127,7 @@ function rebase-point {
 
 function squash {
     if _help-flag "${@}"; then
-        echo "Usage: git wip squash [commit-flags]"
+        echo "Usage: git ${_subcommand} squash [commit-flags]"
         echo
         echo "Add a squash commit to a previous commit."
     else
