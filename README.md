@@ -32,7 +32,7 @@ To perform the actual fixup/squash:
 $ git wip autosquash
 ```
 
-And to test that everything went fine (and you didnät introduce any non-building
+And to test that everything went fine (and you didn't introduce any non-building
 commits):
 
 ```shell
