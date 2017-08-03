@@ -139,8 +139,8 @@ function squash {
     else
         local commit _rp
         if _rp="$(rebase-point)"; then
-            commit="$(_select-commit "$(rebase-point)")"
-            git commit "${@}" --squash="${_rp}"
+            commit="$(_select-commit "${_rp}")"
+            git commit "${@}" --squash="${commit}"
         fi
     fi
 }
