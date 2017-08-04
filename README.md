@@ -3,6 +3,24 @@
 `git-wip` is a [git][git] extension to make working with continually rebased and
 force-pushed work-in-progress branches a breeze.
 
+## Installation ##
+
+Run `make install` for a system installation or `make user-install` for a user
+installation into `~/.local/`.
+
+If you run a user installation you'll probably want to add something similar to
+the following to your `~/.bashrc` to enable bash completion:
+
+```shell
+### Completion
+for comp in ${HOME}/.config/bash_completion.d/*; do
+    if [ -f "${comp}" ] ; then
+        . "${comp}"
+    fi
+done
+
+```
+
 ## Examples ##
 
 Run an interactive rebase on all commits in your wip (work-in-progress) branch:
