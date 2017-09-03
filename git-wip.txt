@@ -1,0 +1,34 @@
+git-wip(1)
+==========
+
+NAME
+----
+git-wip - Work-in-progress branch management
+
+SYNOPSIS
+--------
+[verse]
+'git wip autosquash' [<rebase flags>]
+'git wip for-all' <command>
+'git wip fixup' [<commit flags>]
+'git wip squash' [<commit flags>]
+'git wip log' [<log flags>]
+'git wip reapply' [<rebase flags>]
+'git wip rebase-point'
+
+DESCRIPTION
+-----------
+git wip helps you modify commits since the latest branch-point All commands
+work only on the commits unique to this branch. It includes the following
+utilities:
+
+  'autosquash'      Automatically squash all squash! and fixup!
+                    commits
+  'for-all'         Run a command over all commits, stopping in case
+                    of failure
+  'fixup'           Add a fixup commit to a previous commit.
+  'log'             Show commit logs
+  'reapply'         Reapply all commits using an interactive rebase
+  'rebase-point'    Get the parent of the first commit unique for this
+                    branch
+  'squash'          Add a squash commit to a previous commit.
