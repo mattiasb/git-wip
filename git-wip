@@ -54,7 +54,7 @@ function autosquash {
     else
         local _rp
         if _rp="$(rebase-point)"; then
-            EDITOR=true git rebase -i --autosquash "${@}" "${_rp}"
+            GIT_SEQUENCE_EDITOR=true git rebase -i --autosquash "${@}" "${_rp}"
         fi
     fi
 }
