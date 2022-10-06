@@ -51,10 +51,12 @@ function _select-commit {
 
 function autosquash {
     if _help-flag "${@}"; then
-        echo "Usage: git ${_subcommand} autosquash [rebase-flags]"
-        echo
-        echo "Short-hand for:"
-        echo "  EDITOR=true git rebase -i --autosquash [rebase-flags] \"\$(git ${_subcommand} rebase-point)\""
+        cat <<EOM
+Usage: git ${_subcommand} autosquash [rebase-flags]
+
+Short-hand for:
+  EDITOR=true git rebase -i --autosquash [rebase-flags] "\$(git ${_subcommand} rebase-point)"
+EOM
     else
         local _rp
         if _rp="$(rebase-point)"; then
@@ -79,10 +81,13 @@ function fixup {
 
 function for-all {
     if _help-flag "${@}"; then
-        echo "Usage: git ${_subcommand} foreach <COMMAND>"
-        echo
-        echo "Run <COMMAND> over all commits, stopping in case of failure."
-        echo "git rebase -x <COMMAND> \"\$(git ${_subcommand} rebase-point)\""
+        cat <<EOM
+Usage: git ${_subcommand} foreach <COMMAND>
+
+Run <COMMAND> over all commits, stopping in case of failure.
+git rebase -x <COMMAND> "\$(git ${_subcommand} rebase-point)"
+EOM
+
     else
         local _rp
         if _rp="$(rebase-point)"; then
@@ -93,10 +98,12 @@ function for-all {
 
 function log {
     if _help-flag "${@}"; then
-        echo "Usage: git ${_subcommand} log [log-flags]"
-        echo
-        echo "Short-hand for:"
-        echo "  git log [log-flags] \"\$(git ${_subcommand} rebase-point)\".."
+        cat <<EOM
+Usage: git ${_subcommand} log [log-flags]
+
+Short-hand for:
+  git log [log-flags] "\$(git ${_subcommand} rebase-point)"..
+EOM
     else
         local _rp
         if _rp="$(rebase-point)"; then
@@ -107,10 +114,12 @@ function log {
 
 function reapply {
     if _help-flag "${@}"; then
-        echo "Usage: git ${_subcommand} reapply [rebase-flags]"
-        echo
-        echo "Short-hand for:"
-        echo "  git rebase -i [rebase-flags] \"\$(git ${_subcommand} rebase-point)\""
+        cat <<EOM
+Usage: git ${_subcommand} reapply [rebase-flags]
+
+Short-hand for:
+  git rebase -i [rebase-flags] "\$(git ${_subcommand} rebase-point)"
+EOM
     else
         local _rp
         if _rp="$(rebase-point)"; then
@@ -137,9 +146,11 @@ function rebase-point {
 
 function squash {
     if _help-flag "${@}"; then
-        echo "Usage: git ${_subcommand} squash [commit-flags]"
-        echo
-        echo "Add a squash commit to a previous commit."
+        cat <<EOM
+Usage: git ${_subcommand} squash [commit-flags]
+
+Add a squash commit to a previous commit.
+EOM
     else
         local commit _rp
         if _rp="$(rebase-point)"; then
@@ -174,26 +185,32 @@ case "${arg}" in
         squash "${@}"
         ;;
     *)
-        echo "Usage: git ${_subcommand} [command] [<option>]"
-        echo
+        declare -a strings
+        if _wip; then
+            strings=( "since the latest branch-point"
+                      "the commits unique to this branch"
+                      "commit unique for this branch" )
+        else
+            strings=( "not yet pushed upstream"
+                      "your local, not yet pushed, commits"
+                      "local, not yet pushed, commit" )
+        fi
+        cat <<EOM
+Usage: git ${_subcommand} [command] [<option>]
 
-        _wip   && echo "  git wip helps you modify commits since the latest branch-point"
-        _wip   && echo "  All commands work only on the commits unique to this branch"
+  git ${_subcommand} helps you modify commits ${strings[0]}
+  All commands work only on ${strings[1]}
 
-        _local && echo "  git local helps you modify commits not yet pushed upstream"
-        _local && echo "  All commands work only on your local, not yet pushed, commits"
-
-        echo
-        echo "Commands:"
-        echo "  autosquash          Automatically squash all squash! and fixup! commits"
-        echo "  for-all             Run a command over all commits, stopping in case of failure."
-        echo "  fixup               Add a fixup commit to a previous commit."
-        echo "  log                 Show commit logs"
-        echo "  reapply             Reapply all commits using an interactive rebase"
-        _wip   && echo "  rebase-point        Get the parent of the first commit unique for this branch"
-        _local && echo "  rebase-point        Get the parent of the first local, not yet pushed, commit"
-
-        echo "  squash              Add a squash commit to a previous commit."
+Commands:
+  autosquash          Automatically squash all squash! and fixup! commits
+  for-all             Run a command over all commits, stopping in case of
+                      failure.
+  fixup               Add a fixup commit to a previous commit.
+  log                 Show commit logs
+  reapply             Reapply all commits using an interactive rebase
+  rebase-point        Get the parent of the first ${strings[2]}
+  squash              Add a squash commit to a previous commit.
+EOM
         exit 2
         ;;
 esac
