@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
+<!-- Copyright 2018, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com> -->
+
 # Git-wip #
 
 `git-wip` is a [git][git] extension to make working with continually rebased and

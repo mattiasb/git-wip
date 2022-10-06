@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright 2016, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
+# Copyright 2017, Jonas Ådahl <jadahl@gmail.com>
+
 USER_INSTALL_PREFIX=$(HOME)/.local
 USER_COMPLETION_INSTALL_PATH=$(HOME)/.config/bash_completion.d/
 
