@@ -36,13 +36,17 @@ function _select-commit {
     local IFS=$'\n'
     local _commits
 
-    _wip   && _commits=$(git --no-pager wip   log --oneline)
-    _local && _commits=$(git --no-pager local log --oneline)
+    mapfile -t _commits < <(git --no-pager "${_subcommand}" log --oneline)
 
-    select commit in ${_commits}; do
-        echo "${commit}" | cut -f1 -d" "
-        break
-    done
+    if command -v fzf >/dev/null; then
+        printf "%s\n" "${_commits[@]}" \
+            | fzf --ansi --height $(( ${#_commits[@]} + 2))
+    else
+        select commit in "${_commits[@]}"; do
+            echo "${commit}"
+            break
+        done
+    fi | cut -f1 -d" "
 }
 
 function autosquash {
