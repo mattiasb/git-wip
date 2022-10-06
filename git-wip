@@ -29,7 +29,7 @@ function _local {
 }
 
 function _help-flag {
-    [[ " ${@} " == *" --help "* ]] || [[ " ${@} " == *" -h "* ]]
+    [[ " ${*} " == *" --help "* ]] || [[ " ${*} " == *" -h "* ]]
 }
 
 function _select-commit {
