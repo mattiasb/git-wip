@@ -24,7 +24,7 @@ user-install: $(DOC_FILES)
 	install -m 644 -D 						\
 		$(COMPLETION)						\
 		$(USER_COMPLETION_INSTALL_PATH)/$(COMPLETION)
-	install -m 0644 -D git-wip.1 $(USER_INSTALL_PREFIX)/share/man/man1
+	install -m 0644 -DT git-wip.1 $(USER_INSTALL_PREFIX)/share/man/man1/git-wip.1
 
 install: $(DOC_FILES)
 	install -D  git-wip $(SYSTEM_INSTALL_PREFIX)/bin/
@@ -32,7 +32,7 @@ install: $(DOC_FILES)
 	install -m 644 -D 						\
 		$(COMPLETION)						\
 		$(SYSTEM_COMPLETION_INSTALL_PATH)/$(COMPLETION)
-	install -m 0644 -D git-wip.1 $(SYSTEM_INSTALL_PREFIX)/share/man/man1
+	install -m 0644 -D git-wip.1 $(SYSTEM_INSTALL_PREFIX)/share/man/man1/git-wip.1
 
 clean:
 	rm -f $(DOC_FILES)
