@@ -3,15 +3,15 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright 2016, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
 
-_subcommand=$(basename "${0}")
-_subcommand=${_subcommand/git-/}
+CMD=$(basename "${0}")
+CMD=${CMD/git-/}
 
 function _wip {
-    [ "${_subcommand}" == "wip" ]
+    [ "${CMD}" == "wip" ]
 }
 
 function _local {
-    [ "${_subcommand}" == "local" ]
+    [ "${CMD}" == "local" ]
 }
 
 function _help-flag {
@@ -22,7 +22,7 @@ function _select-commit {
     local IFS=$'\n'
     local _commits
 
-    mapfile -t _commits < <(git --no-pager "${_subcommand}" log --oneline)
+    mapfile -t _commits < <(git --no-pager "${CMD}" log --oneline)
 
     if command -v fzf >/dev/null; then
         printf "%s\n" "${_commits[@]}" \
@@ -36,22 +36,27 @@ function _select-commit {
 }
 
 function autosquash {
+    local _rp
+
     if _help-flag "${@}"; then
-        echo "Usage: git ${_subcommand} autosquash [rebase-flags]"
-        echo
-        echo "Short-hand for:"
-        echo "  EDITOR=true git rebase -i --autosquash [rebase-flags] \"\$(git ${_subcommand} rebase-point)\""
-    else
-        local _rp
-        if _rp="$(rebase-point)"; then
-            GIT_SEQUENCE_EDITOR=true git rebase -i --autosquash "${@}" "${_rp}"
-        fi
+        cat <<EOM
+Usage: git ${CMD} autosquash [flags]
+
+Short-hand for:
+  EDITOR=true git rebase -i --autosquash [flags] "\$(git ${CMD} rebase-point)"
+
+EOM
+        return
+    fi
+
+    if _rp="$(rebase-point)"; then
+        GIT_SEQUENCE_EDITOR=true git rebase -i --autosquash "${@}" "${_rp}"
     fi
 }
 
 function fixup {
     if _help-flag "${@}"; then
-        echo "Usage: git ${_subcommand} fixup [commit-flags]"
+        echo "Usage: git ${CMD} fixup [commit-flags]"
         echo
         echo "Add a fixup commit to a previous commit."
     else
@@ -65,10 +70,10 @@ function fixup {
 
 function for-all {
     if _help-flag "${@}"; then
-        echo "Usage: git ${_subcommand} foreach <COMMAND>"
+        echo "Usage: git ${CMD} foreach <COMMAND>"
         echo
         echo "Run <COMMAND> over all commits, stopping in case of failure."
-        echo "git rebase -x <COMMAND> \"\$(git ${_subcommand} rebase-point)\""
+        echo "git rebase -x <COMMAND> \"\$(git ${CMD} rebase-point)\""
     else
         local _rp
         if _rp="$(rebase-point)"; then
@@ -79,10 +84,10 @@ function for-all {
 
 function log {
     if _help-flag "${@}"; then
-        echo "Usage: git ${_subcommand} log [log-flags]"
+        echo "Usage: git ${CMD} log [log-flags]"
         echo
         echo "Short-hand for:"
-        echo "  git log [log-flags] \"\$(git ${_subcommand} rebase-point)\".."
+        echo "  git log [log-flags] \"\$(git ${CMD} rebase-point)\".."
     else
         local _rp
         if _rp="$(rebase-point)"; then
@@ -93,10 +98,10 @@ function log {
 
 function reapply {
     if _help-flag "${@}"; then
-        echo "Usage: git ${_subcommand} reapply [rebase-flags]"
+        echo "Usage: git ${CMD} reapply [rebase-flags]"
         echo
         echo "Short-hand for:"
-        echo "  git rebase -i [rebase-flags] \"\$(git ${_subcommand} rebase-point)\""
+        echo "  git rebase -i [rebase-flags] \"\$(git ${CMD} rebase-point)\""
     else
         local _rp
         if _rp="$(rebase-point)"; then
@@ -123,7 +128,7 @@ function rebase-point {
 
 function squash {
     if _help-flag "${@}"; then
-        echo "Usage: git ${_subcommand} squash [commit-flags]"
+        echo "Usage: git ${CMD} squash [commit-flags]"
         echo
         echo "Add a squash commit to a previous commit."
     else
@@ -160,7 +165,7 @@ case "${arg}" in
         squash "${@}"
         ;;
     *)
-        echo "Usage: git ${_subcommand} [command] [<option>]"
+        echo "Usage: git ${CMD} [command] [<option>]"
         echo
 
         _wip   && echo "  git wip helps you modify commits since the latest branch-point"
