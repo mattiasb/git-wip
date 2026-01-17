@@ -54,6 +54,7 @@ bashcompdir        ?= $(sysconfdir)/bash_completion.d
 targets             = $(bindir)/git-wip                                        \
                       $(bindir)/git-local                                      \
                       $(man1dir)/git-wip.1                                     \
+                      $(man1dir)/git-local.1                                   \
                       $(bashcompdir)/git-wip-completion.bash
 
 install: $(targets)

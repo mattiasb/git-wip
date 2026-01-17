@@ -1,0 +1,35 @@
+git-local(1)
+==========
+
+NAME
+----
+git-local - Work-in-progress branch management
+
+SYNOPSIS
+--------
+[verse]
+git local autosquash [<rebase flags>]
+git local for-all <command>
+git local fixup [<commit flags>]
+git local squash [<commit flags>]
+git local log [<log flags>]
+git local reapply [<rebase flags>]
+git local rebase-point
+
+DESCRIPTION
+-----------
+
+git local helps you modify commits not yet pushed upstream. All commands work
+only on your local, not yet pushed, commits. It includes the following
+utilities:
+
+  autosquash      Automatically squash all squash! and fixup!
+                  commits
+  for-all         Run a command over all commits, stopping in case
+                  of failure
+  fixup           Add a fixup commit to a previous commit.
+  log             Show commit logs
+  reapply         Reapply all commits using an interactive rebase
+  rebase-point    Get the parent of the first commit unique for this
+                  branch
+  squash          Add a squash commit to a previous commit.
