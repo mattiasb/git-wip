@@ -57,6 +57,9 @@ targets             = $(bindir)/git-wip                                        \
                       $(bashcompdir)/git-wip-completion.bash
 
 install: $(targets)
+uninstall:
+	echo rm $(targets)
+	rm $(targets)
 
 clean:
 	rm -f build/*
