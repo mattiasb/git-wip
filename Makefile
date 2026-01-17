@@ -2,37 +2,86 @@
 # Copyright 2016, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
 # Copyright 2017, Jonas Ådahl <jadahl@gmail.com>
 
-USER_INSTALL_PREFIX=$(HOME)/.local
-USER_COMPLETION_INSTALL_PATH=$(HOME)/.config/bash_completion.d/
+################################################################################
+## Makefile config
 
-SYSTEM_INSTALL_PREFIX=/usr/local
-SYSTEM_COMPLETION_INSTALL_PATH=/etc/bash_completion.d/
+SHELL       := /bin/bash
+.SHELLFLAGS := -euo pipefail -c
+.ONESHELL:
+.SILENT:
+MAKEFLAGS   += --warn-undefined-variables
+MAKEFLAGS   += --no-builtin-rules
+NULL        :=
 
-COMPLETION=git-wip-completion.bash
+################################################################################
+## Macros
 
-DOC_FILES=git-wip.xml git-wip.1
+define show
+	echo "## $1" ;                                \
+	{ $(foreach v,$2,echo $(v)=$($(v));) }        \
+	| column -tL -o ' = ' -s '=' --table-right 1; \
+	echo
+endef
 
-%.xml: %.txt
-	asciidoc -f asciidoc.conf -d manpage -b docbook -o $@ $<
+################################################################################
+## XDG constants
 
-%.1: %.xml
-	xmlto man $<
+XDG_DATA_HOME   ?= $(HOME)/.local/share
+XDG_STATE_HOME  ?= $(HOME)/.local/state
+XDG_CONFIG_HOME ?= $(HOME)/.config
+XDG_CACHE_HOME  ?= $(HOME)/.cache
 
-user-install: $(DOC_FILES)
-	install -D  git-wip $(USER_INSTALL_PREFIX)/bin/
-	install -DT git-wip $(USER_INSTALL_PREFIX)/bin/git-local
-	install -m 644 -D 						\
-		$(COMPLETION)						\
-		$(USER_COMPLETION_INSTALL_PATH)/$(COMPLETION)
-	install -m 0644 -DT git-wip.1 $(USER_INSTALL_PREFIX)/share/man/man1/git-wip.1
+################################################################################
+## GNU standard installation directories
 
-install: $(DOC_FILES)
-	install -D  git-wip $(SYSTEM_INSTALL_PREFIX)/bin/
-	install -DT git-wip $(SYSTEM_INSTALL_PREFIX)/bin/git-local
-	install -m 644 -D 						\
-		$(COMPLETION)						\
-		$(SYSTEM_COMPLETION_INSTALL_PATH)/$(COMPLETION)
-	install -m 0644 -D git-wip.1 $(SYSTEM_INSTALL_PREFIX)/share/man/man1/git-wip.1
+# See https://www.gnu.org/prep/standards/html_node/Directory-Variables.html
+
+ifeq ($(shell id -u), 0)
+	prefix     ?= /usr/local
+	sysconfdir ?= /etc/
+else
+	prefix     ?= $(shell realpath -m $(XDG_DATA_HOME)/..)
+	sysconfdir ?= $(XDG_CONFIG_HOME)/
+endif
+datarootdir        ?= $(prefix)/share
+bindir             ?= $(prefix)/bin
+mandir             ?= $(datarootdir)/man
+man1dir            ?= $(mandir)/man1
+bashcompdir        ?= $(sysconfdir)/bash_completion.d
+
+################################################################################
+
+targets             = $(bindir)/git-wip                                        \
+                      $(bindir)/git-local                                      \
+                      $(man1dir)/git-wip.1                                     \
+                      $(bashcompdir)/git-wip-completion.bash
+
+install: $(targets)
 
 clean:
-	rm -f $(DOC_FILES)
+	rm -f build/*
+
+%/:
+	mkdir -p $@
+
+$(bindir)/git-local: $(bindir)/git-wip
+	echo -e "$(<) —→ $(@)"
+	ln -s $(<) $(@)
+
+$(bindir)/%: % | $(bindir)/
+	echo -e "$(<) =⇒ $(@)"
+	install -m '0755' -DT $(<) $(@)
+
+$(bashcompdir)/%: % | $(bashcompdir)/
+	echo -e "$(<) =⇒ $(@)"
+	install -m '0644' -DT $(<) $(@)
+
+$(man1dir)/%.1: build/%.1 | $(man1dir)/
+	echo -e "$(<) =⇒ $(@)"
+	install -m '0644' -DT $(<) $(@)
+
+build/%.1: build/%.xml
+	if ! out=$$(xmlto man $(<) -o build/ 2>&1); then echo $${out}; fi
+
+build/%.xml: %.txt | build/
+	asciidoc -f asciidoc.conf -d manpage -b docbook -o $@ $<
