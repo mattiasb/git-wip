@@ -38,10 +38,10 @@ XDG_CACHE_HOME  ?= $(HOME)/.cache
 
 ifeq ($(shell id -u), 0)
 	prefix     ?= /usr/local
-	sysconfdir ?= /etc/
+	sysconfdir ?= /etc
 else
 	prefix     ?= $(shell realpath -m $(XDG_DATA_HOME)/..)
-	sysconfdir ?= $(XDG_CONFIG_HOME)/
+	sysconfdir ?= $(XDG_CONFIG_HOME)
 endif
 datarootdir        ?= $(prefix)/share
 bindir             ?= $(prefix)/bin
