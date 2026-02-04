@@ -70,7 +70,7 @@ clean:
 
 $(bindir)/git-local: $(bindir)/git-wip
 	echo -e "$(<) —→ $(@)"
-	ln -s $(<) $(@)
+	ln -sf $(<) $(@)
 
 $(bindir)/%: % | $(bindir)/
 	echo -e "$(<) =⇒ $(@)"
