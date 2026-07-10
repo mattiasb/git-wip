@@ -80,12 +80,12 @@ $(bashcompdir)/%: % | $(bashcompdir)/
 	echo -e "$(<) =⇒ $(@)"
 	install -m '0644' -DT $(<) $(@)
 
-$(man1dir)/%.1: build/%.1 | $(man1dir)/
+$(man1dir)/%.1: build/man/%.1 | $(man1dir)/
 	echo -e "$(<) =⇒ $(@)"
 	install -m '0644' -DT $(<) $(@)
 
-build/%.1: build/%.xml
-	if ! out=$$(xmlto man $(<) -o build/ 2>&1); then echo $${out}; fi
+build/man/%.1: build/man/%.xml | build/man/
+	if ! out=$$(xmlto man $(<) -o $(dir $@)/ 2>&1); then echo $${out}; fi
 
-build/%.xml: %.txt | build/
-	asciidoc -f asciidoc.conf -d manpage -b docbook -o $@ $<
+build/man/%.xml: man/%.adoc | build/man/
+	asciidoc -f man/asciidoc.conf -d manpage -b docbook -o $@ $<
