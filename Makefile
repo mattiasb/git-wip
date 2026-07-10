@@ -57,6 +57,9 @@ targets             = $(bindir)/git-wip                                        \
                       $(man1dir)/git-local.1                                   \
                       $(bashcompdir)/git-wip-completion.bash
 
+
+all: build/man/git-wip.1 build/man/git-local.1
+
 install: $(targets)
 uninstall:
 	echo rm $(targets)
